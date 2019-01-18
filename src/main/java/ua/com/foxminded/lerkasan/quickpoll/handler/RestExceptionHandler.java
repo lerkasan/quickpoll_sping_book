@@ -1,5 +1,6 @@
 package ua.com.foxminded.lerkasan.quickpoll.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
@@ -23,7 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
@@ -45,17 +47,22 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                 .map(fieldError -> new ValidationError(fieldError.getField(), fieldError.getCode(), messageSource.getMessage(fieldError, DEFAULT_LOCALE)))
                 .collect(Collectors.groupingBy(ValidationError::getField));
         errorDetail.setErrors(validationErrors);
-        String messageTitleId = String.valueOf(BAD_REQUEST.value()) + TITLE;
-        String message = messageSource.getMessage(messageTitleId, null, DEFAULT_LOCALE);
-        errorDetail.setTitle(BAD_REQUEST.name() + " - " + message);
         return handleExceptionInternal(ex, errorDetail, headers, status, request);
     }
 
-    @ResponseStatus(UNPROCESSABLE_ENTITY)
-//    @ExceptionHandler(value = {JsonParseException.class, JsonMappingException.class, HttpMessageNotReadableException.class})  // !!! THIS WILL CAUSE AMBIGUITY WITH handleMethodArgumentNotValid method in ResponseEntityExceptionHandler class
+    @ResponseStatus(BAD_REQUEST)
+//    @ExceptionHandler(HttpMessageNotReadableException.class)  // !!! THIS WILL CAUSE AMBIGUITY WITH handleMethodArgumentNotValid method in ResponseEntityExceptionHandler class
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorDetails errorDetail = fillInErrorDetails(ex, status);
+        return handleExceptionInternal(ex, errorDetail, headers, status, request);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(JsonProcessingException.class)
+    protected ResponseEntity<Object> handleJsonProcessing(
+            JsonProcessingException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
         ErrorDetails errorDetail = fillInErrorDetails(ex, status);
         return handleExceptionInternal(ex, errorDetail, headers, status, request);
     }
@@ -64,15 +71,15 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     protected ResponseEntity<?> handleResourceNotFound(
             ResourceNotFoundException ex) {
-        ErrorDetails errorDetail = fillInErrorDetails(ex, NOT_FOUND);
-        String messageTitleId = String.valueOf(NOT_FOUND.value()) + TITLE;
-        String message = messageSource.getMessage(messageTitleId, null, DEFAULT_LOCALE);
-        errorDetail.setTitle(NOT_FOUND.name() + " - " + message);
+        ErrorDetails errorDetail = fillInErrorDetails(ex, NOT_FOUND);;
         return new ResponseEntity<>(errorDetail, NOT_FOUND);
     }
 
     private ErrorDetails fillInErrorDetails(Exception ex, HttpStatus status) {
         ErrorDetails errorDetail = new ErrorDetails();
+        String messageTitleId = String.valueOf(status.value()) + TITLE;
+        String message = messageSource.getMessage(messageTitleId, null, DEFAULT_LOCALE);
+        errorDetail.setTitle(status.name() + " - " + message);
         errorDetail.setStatus(status.value());
         errorDetail.setDetail(ex.getMessage());
         errorDetail.setExceptionName(ex.getClass().getCanonicalName());
