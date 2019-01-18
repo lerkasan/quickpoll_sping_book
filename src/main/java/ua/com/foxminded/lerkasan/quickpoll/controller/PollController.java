@@ -10,6 +10,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Poll;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -30,7 +31,7 @@ public class PollController {
 
     @ApiOperation(value = "Create a new poll")
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity createPoll(@RequestBody Poll poll) {
+    public ResponseEntity createPoll(@Valid @RequestBody Poll poll) {
         Poll createdPoll = pollRepository.save(poll);
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequestUri().path("/{id}")
@@ -57,7 +58,7 @@ public class PollController {
 
     @ApiOperation(value = "Update a poll with given pollId")
     @PutMapping(path = "/{pollId}", consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity updatePoll(@ModelAttribute Poll oldPoll, @RequestBody Poll poll) {
+    public ResponseEntity updatePoll(@ModelAttribute Poll oldPoll, @Valid @RequestBody Poll poll) {
         poll.setId(oldPoll.getId());
         Poll updatedPoll = pollRepository.save(poll);
         return ResponseEntity.ok().body(updatedPoll);

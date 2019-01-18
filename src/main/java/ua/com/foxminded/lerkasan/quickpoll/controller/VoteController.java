@@ -13,6 +13,7 @@ import ua.com.foxminded.lerkasan.quickpoll.exception.ResourceNotFoundException;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
 import ua.com.foxminded.lerkasan.quickpoll.repository.VoteRepository;
 
+import javax.validation.Valid;
 import java.net.URI;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
@@ -39,7 +40,7 @@ public class VoteController {
 
     @ApiOperation(value = "Vote in a a poll with given pollId")
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity createVote(@ModelAttribute Poll poll, @RequestBody Vote vote) {
+    public ResponseEntity createVote(@ModelAttribute Poll poll, @Valid @RequestBody Vote vote) {
         if (! poll.getOptions().contains(vote.getOption())) {
             throw new ResourceNotFoundException("Vote option doesn't match the question options");
         }
