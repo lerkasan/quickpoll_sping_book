@@ -58,4 +58,11 @@ public class VoteController {
         Iterable<Vote> votes = voteRepository.findByPoll(poll.getId());
         return new ResponseEntity<>(votes, HttpStatus.OK);
     }
+
+    @ApiOperation(value = "Show info about a vote with given voteId")
+    @GetMapping("/{voteId}")
+    public ResponseEntity<Vote> getVote(@PathVariable Long voteId) {
+        Vote vote = voteRepository.getVoteById(voteId);
+        return new ResponseEntity<>(vote, HttpStatus.OK);
+    }
 }

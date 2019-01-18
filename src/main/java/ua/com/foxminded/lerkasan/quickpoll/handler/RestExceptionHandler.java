@@ -3,11 +3,13 @@ package ua.com.foxminded.lerkasan.quickpoll.handler;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.NoSuchMessageException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,6 +27,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @ControllerAdvice
@@ -59,6 +62,14 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, errorDetail, headers, status, request);
     }
 
+    @ResponseStatus(METHOD_NOT_ALLOWED)
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+        ErrorDetails errorDetail = fillInErrorDetails(ex, status);
+        return handleExceptionInternal(ex, errorDetail, headers, status, request);
+    }
+
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(JsonProcessingException.class)
     protected ResponseEntity<Object> handleJsonProcessing(
@@ -78,8 +89,13 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private ErrorDetails fillInErrorDetails(Exception ex, HttpStatus status) {
         ErrorDetails errorDetail = new ErrorDetails();
         String messageTitleId = String.valueOf(status.value()) + TITLE;
-        String message = messageSource.getMessage(messageTitleId, null, DEFAULT_LOCALE);
-        errorDetail.setTitle(status.name() + " - " + message);
+        String message;
+        try {
+            message = status.name() + " - " + messageSource.getMessage(messageTitleId, null, DEFAULT_LOCALE);
+        } catch (NoSuchMessageException e) {
+            message = status.name();
+        }
+        errorDetail.setTitle(message);
         errorDetail.setStatus(status.value());
         errorDetail.setDetail(ex.getMessage());
         errorDetail.setExceptionName(ex.getClass().getCanonicalName());
