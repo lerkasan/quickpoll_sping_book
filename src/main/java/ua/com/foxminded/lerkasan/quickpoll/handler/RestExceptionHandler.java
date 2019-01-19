@@ -80,10 +80,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(ResourceNotFoundException.class)
-    protected ResponseEntity<?> handleResourceNotFound(
-            ResourceNotFoundException ex) {
+    protected ResponseEntity<?> handleResourceNotFound(ResourceNotFoundException ex) {
         ErrorDetails errorDetail = fillInErrorDetails(ex, NOT_FOUND);;
         return new ResponseEntity<>(errorDetail, NOT_FOUND);
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    protected ResponseEntity<?> handleIllegalArgument(IllegalArgumentException ex) {
+        ErrorDetails errorDetail = fillInErrorDetails(ex, BAD_REQUEST);;
+        return new ResponseEntity<>(errorDetail, BAD_REQUEST);
     }
 
     private ErrorDetails fillInErrorDetails(Exception ex, HttpStatus status) {

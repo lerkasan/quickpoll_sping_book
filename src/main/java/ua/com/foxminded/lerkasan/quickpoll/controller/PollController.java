@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Poll;
+import ua.com.foxminded.lerkasan.quickpoll.domain.Vote;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
+import ua.com.foxminded.lerkasan.quickpoll.repository.VoteRepository;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -21,6 +24,9 @@ public class PollController {
 
     @Autowired
     private PollRepository pollRepository;
+
+    @Autowired
+    private VoteRepository voteRepository;
 
     @ApiOperation(value = "List all polls")
     @GetMapping
@@ -67,6 +73,8 @@ public class PollController {
     @ApiOperation(value = "Delete a poll with given pollId")
     @DeleteMapping(path = "/{pollId}")
     public ResponseEntity deletePoll(@ModelAttribute Poll poll) {
+        Iterable<Vote> votes = voteRepository.findByPoll(poll.getId());
+        votes.forEach(vote -> voteRepository.delete(vote)); // Is there any way to achieve this by Cascade.REMOVE?
         pollRepository.delete(poll);
         return ResponseEntity.noContent().build();
     }

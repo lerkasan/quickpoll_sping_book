@@ -9,7 +9,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Poll;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Vote;
-import ua.com.foxminded.lerkasan.quickpoll.exception.ResourceNotFoundException;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
 import ua.com.foxminded.lerkasan.quickpoll.repository.VoteRepository;
 
@@ -42,7 +41,7 @@ public class VoteController {
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity createVote(@ModelAttribute Poll poll, @Valid @RequestBody Vote vote) {
         if (! poll.getOptions().contains(vote.getOption())) {
-            throw new ResourceNotFoundException("Vote option doesn't match the question options");
+            throw new IllegalArgumentException("Vote option doesn't match the question options");
         }
         Vote createdVote = voteRepository.save(vote);
         URI location = ServletUriComponentsBuilder
