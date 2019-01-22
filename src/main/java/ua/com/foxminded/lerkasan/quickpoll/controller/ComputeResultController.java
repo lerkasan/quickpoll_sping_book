@@ -1,6 +1,6 @@
 package ua.com.foxminded.lerkasan.quickpoll.controller;
 
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Vote;
 import ua.com.foxminded.lerkasan.quickpoll.dto.OptionCount;
 import ua.com.foxminded.lerkasan.quickpoll.dto.VoteResult;
+import ua.com.foxminded.lerkasan.quickpoll.dto.error.ErrorDetails;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
 import ua.com.foxminded.lerkasan.quickpoll.repository.VoteRepository;
 
@@ -27,8 +28,12 @@ public class ComputeResultController {
     @Autowired
     private PollRepository pollRepository;
 
-    @ApiOperation(value = "View results of a poll with given pollId")
     @GetMapping("/api/computeresult")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Poll results are shown gracefully", response = VoteResult.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)
+    })
+    @ApiOperation(value = "View results of a poll with given pollId", response = VoteResult.class)
     public ResponseEntity computeResult(@RequestParam Long pollId) {
         pollRepository.getPollById(pollId); // just to check existence of a poll with pollId
         VoteResult voteResult = new VoteResult();

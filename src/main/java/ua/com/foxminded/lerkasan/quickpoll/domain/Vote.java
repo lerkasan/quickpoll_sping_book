@@ -1,5 +1,6 @@
 package ua.com.foxminded.lerkasan.quickpoll.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,5 +17,6 @@ public class Vote {
     @ManyToOne
     @PrimaryKeyJoinColumn(name="option_id", referencedColumnName="id")
     @NotNull
+    @ApiModelProperty(required = true)
     private Option option;
 }

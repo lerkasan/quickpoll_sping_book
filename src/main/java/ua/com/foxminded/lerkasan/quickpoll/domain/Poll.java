@@ -1,5 +1,6 @@
 package ua.com.foxminded.lerkasan.quickpoll.domain;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class Poll {
     private Long id;
 
     @NotEmpty
+    @ApiModelProperty(required = true)
     private String question;
 
     @OneToMany(cascade = CascadeType.ALL)
@@ -23,5 +25,6 @@ public class Poll {
     @OrderBy
     @NotEmpty
     @Size(min = 2, max = 6)
+    @ApiModelProperty(required = true)
     private Set<Option> options;
 }

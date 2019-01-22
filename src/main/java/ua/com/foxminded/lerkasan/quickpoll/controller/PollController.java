@@ -1,6 +1,8 @@
 package ua.com.foxminded.lerkasan.quickpoll.controller;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,12 +11,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import springfox.documentation.annotations.ApiIgnore;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Poll;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Vote;
+import ua.com.foxminded.lerkasan.quickpoll.dto.error.ErrorDetails;
 import ua.com.foxminded.lerkasan.quickpoll.repository.PollRepository;
 import ua.com.foxminded.lerkasan.quickpoll.repository.VoteRepository;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.List;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
@@ -28,15 +30,21 @@ public class PollController {
     @Autowired
     private VoteRepository voteRepository;
 
-    @ApiOperation(value = "List all polls")
     @GetMapping
+    @ApiOperation(value = "List all polls", response = Poll.class, responseContainer = "List")
+    @ApiResponse(code = 200, message = "Polls were listed gracefully", response = Poll.class, responseContainer = "List")
     public ResponseEntity<Iterable<Poll>> getAllPolls() {
         Iterable<Poll> allPolls = pollRepository.findAll();
         return new ResponseEntity<>(allPolls, HttpStatus.OK);
     }
 
-    @ApiOperation(value = "Create a new poll")
+
     @PostMapping(consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Create a new poll", notes = "The URL of the created poll is returned in Location header", response = Poll.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 201, message = "Poll was created gracefully", response = Poll.class),
+            @ApiResponse(code = 400, message = "Bad request", response = ErrorDetails.class)
+    })
     public ResponseEntity createPoll(@Valid @RequestBody Poll poll) {
         Poll createdPoll = pollRepository.save(poll);
         URI location = ServletUriComponentsBuilder
@@ -56,22 +64,35 @@ public class PollController {
         return poll;
     }
 
-    @ApiOperation(value = "Get info about a poll with given pollId")
     @GetMapping(path = "/{pollId}")
+    @ApiOperation(value = "Get info about a poll with given pollId", response = Poll.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Poll info is shown gracefully", response = Poll.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)
+    })
     public ResponseEntity getPoll(@ModelAttribute Poll poll) {
         return ResponseEntity.ok().body(poll);
     }
 
-    @ApiOperation(value = "Update a poll with given pollId")
     @PutMapping(path = "/{pollId}", consumes = APPLICATION_JSON_VALUE)
+    @ApiOperation(value = "Update a poll with given pollId", response = Poll.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 202, message = "Poll was updated gracefully", response = Poll.class),
+            @ApiResponse(code = 400, message = "Bad request", response = ErrorDetails.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)
+    })
     public ResponseEntity updatePoll(@ModelAttribute Poll oldPoll, @Valid @RequestBody Poll poll) {
         poll.setId(oldPoll.getId());
         Poll updatedPoll = pollRepository.save(poll);
         return ResponseEntity.ok().body(updatedPoll);
     }
 
-    @ApiOperation(value = "Delete a poll with given pollId")
     @DeleteMapping(path = "/{pollId}")
+    @ApiOperation(value = "Delete a poll with given pollId", response = Void.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 204, message = "Poll was deleted gracefully", response = Void.class),
+            @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)
+    })
     public ResponseEntity deletePoll(@ModelAttribute Poll poll) {
         Iterable<Vote> votes = voteRepository.findByPoll(poll.getId());
         votes.forEach(vote -> voteRepository.delete(vote)); // Is there any way to achieve this by Cascade.REMOVE?
