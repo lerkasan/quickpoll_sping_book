@@ -13,28 +13,28 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import java.util.Collections;
 
-@Configuration
-//@EnableSwagger2
-public class SwaggerConfig {
-
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(Predicates.not(PathSelectors.ant("/error*")))
-                .build()
-                .apiInfo(apiInfo())
-                .useDefaultResponseMessages(false);
-    }
-
-    private ApiInfo apiInfo() {
-        return new ApiInfo(
-                "Quickpoll RESTful API",
-                "RESTful API for Quickpoll",
-                "1.0",
-                "Terms of service",
-                new Contact("Valeriia Lapytska", "www.example.com", "lerkasan@gmail.com"),
-                "License of API", "API license URL", Collections.emptyList());
-    }
-}
+//@Configuration
+////@EnableSwagger2
+//public class SwaggerConfig {
+//
+//    @Bean
+//    public Docket api() {
+//        return new Docket(DocumentationType.SWAGGER_2)
+//                .select()
+//                .apis(RequestHandlerSelectors.any())
+//                .paths(Predicates.not(PathSelectors.ant("/error*")))
+//                .build()
+//                .apiInfo(apiInfo())
+//                .useDefaultResponseMessages(false);
+//    }
+//
+//    private ApiInfo apiInfo() {
+//        return new ApiInfo(
+//                "Quickpoll RESTful API",
+//                "RESTful API for Quickpoll",
+//                "1.0",
+//                "Terms of service",
+//                new Contact("Valeriia Lapytska", "www.example.com", "lerkasan@gmail.com"),
+//                "License of API", "API license URL", Collections.emptyList());
+//    }
+//}
