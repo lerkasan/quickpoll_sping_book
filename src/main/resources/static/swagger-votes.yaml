@@ -1,0 +1,192 @@
+---
+swagger: '2.0'
+info:
+  description: RESTful API for Quickpoll
+  version: '1.0'
+  title: Quickpoll RESTful API
+  termsOfService: Terms of service
+  contact:
+    name: Valeriia Lapytska
+    url: www.example.com
+    email: lerkasan@example.com
+  license:
+    name: License of API
+    url: API license URL
+host: localhost:8080
+basePath: "/"
+tags:
+- name: vote-controller
+  description: Vote Controller
+paths:
+  "/api/polls/{pollId}/votes":
+    get:
+      tags:
+      - vote-controller
+      summary: List all votes in a poll with given pollId
+      operationId: getAllVotesUsingGET
+      produces:
+      - "*/*"
+      parameters:
+      - name: id
+        in: query
+        required: false
+        type: integer
+        format: int64
+      - name: options[0].id
+        in: query
+        required: false
+        type: integer
+        format: int64
+      - name: options[0].value
+        in: query
+        required: true
+        type: string
+      - name: question
+        in: query
+        required: true
+        type: string
+      responses:
+        '200':
+          description: Votes in a poll are shown gracefully
+          schema:
+            type: array
+            items:
+              "$ref": "#/definitions/Vote"
+        '404':
+          description: Not found
+          schema:
+            "$ref": "#/definitions/ErrorDetails"
+      deprecated: false
+    post:
+      tags:
+      - vote-controller
+      summary: Vote in a poll with given pollId
+      description: The URL of the created vote is returned in Location header
+      operationId: createVoteUsingPOST
+      consumes:
+      - application/json
+      produces:
+      - "*/*"
+      parameters:
+      - name: id
+        in: query
+        required: false
+        type: integer
+        format: int64
+      - name: options[0].id
+        in: query
+        required: false
+        type: integer
+        format: int64
+      - name: options[0].value
+        in: query
+        required: true
+        type: string
+      - name: question
+        in: query
+        required: true
+        type: string
+      - in: body
+        name: vote
+        description: vote
+        required: true
+        schema:
+          "$ref": "#/definitions/Vote"
+      responses:
+        '200':
+          description: OK
+          schema:
+            "$ref": "#/definitions/Vote"
+        '201':
+          description: Vote was accepted gracefully
+          schema:
+            "$ref": "#/definitions/Vote"
+        '400':
+          description: Bad request
+          schema:
+            "$ref": "#/definitions/ErrorDetails"
+      deprecated: false
+  "/api/polls/{pollId}/votes/{voteId}":
+    get:
+      tags:
+      - vote-controller
+      summary: Show info about a vote with given voteId
+      operationId: getVoteUsingGET
+      produces:
+      - "*/*"
+      parameters:
+      - name: voteId
+        in: path
+        description: voteId
+        required: true
+        type: integer
+        format: int64
+      responses:
+        '200':
+          description: Vote info is shown gracefully
+          schema:
+            "$ref": "#/definitions/Vote"
+        '404':
+          description: Not found
+          schema:
+            "$ref": "#/definitions/ErrorDetails"
+      deprecated: false
+definitions:
+  Iterable«Vote»:
+    type: object
+    title: Iterable«Vote»
+  Vote:
+    type: object
+    required:
+    - option
+    properties:
+      id:
+        type: integer
+        format: int64
+      option:
+        "$ref": "#/definitions/Option"
+    title: Vote
+  Option:
+    type: object
+    required:
+    - value
+    properties:
+      id:
+        type: integer
+        format: int64
+      value:
+        type: string
+    title: Option
+  ErrorDetails:
+    type: object
+    properties:
+      detail:
+        type: string
+      errors:
+        type: object
+        additionalProperties:
+          type: array
+          items:
+            "$ref": "#/definitions/ValidationError"
+      exceptionName:
+        type: string
+      status:
+        type: integer
+        format: int32
+      timestamp:
+        type: string
+        format: date-time
+      title:
+        type: string
+    title: ErrorDetails
+  ValidationError:
+    type: object
+    properties:
+      code:
+        type: string
+      message:
+        type: string
+    title: ValidationError
+
+
+
