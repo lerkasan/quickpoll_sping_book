@@ -1,10 +1,11 @@
-package ua.com.foxminded.lerkasan.quickpoll.controller;
+package ua.com.foxminded.lerkasan.quickpoll.v2.controller;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ import java.net.URI;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-@RestController
-@RequestMapping("/api/polls/{pollId}/votes")
+@RestController("voteControllerV2")
+@RequestMapping("/api/v2/polls/{pollId}/votes")
 public class VoteController {
 
     @Autowired
@@ -65,8 +66,8 @@ public class VoteController {
             @ApiResponse(code = 200, message = "Votes in a poll are shown gracefully", response = Vote.class, responseContainer = "List"),
             @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)
     })
-    public ResponseEntity<Iterable<Vote>> getAllVotes(@ModelAttribute Poll poll) {
-        Iterable<Vote> votes = voteRepository.findByPoll(poll.getId());
+    public ResponseEntity<Page<Vote>> getAllVotes(@ModelAttribute Poll poll, Pageable pageable) {
+        Page<Vote> votes = voteRepository.findByPoll(poll.getId(), pageable);
         return new ResponseEntity<>(votes, HttpStatus.OK);
     }
 

@@ -1,9 +1,12 @@
-package ua.com.foxminded.lerkasan.quickpoll.controller;
+package ua.com.foxminded.lerkasan.quickpoll.v2.controller;
 
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Vote;
@@ -19,7 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@RestController
+@RestController("computeResultControllerV2")
+@RequestMapping("/api/v2")
 public class ComputeResultController {
 
     @Autowired
@@ -28,7 +32,7 @@ public class ComputeResultController {
     @Autowired
     private PollRepository pollRepository;
 
-    @GetMapping("/api/computeresult")
+    @GetMapping("/computeresult")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Poll results are shown gracefully", response = VoteResult.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)

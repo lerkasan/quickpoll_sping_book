@@ -1,6 +1,5 @@
 package ua.com.foxminded.lerkasan.quickpoll.config;
 
-import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.PathSelectors;
@@ -18,13 +17,26 @@ import java.util.Collections;
 public class SwaggerConfig {
 
     @Bean
-    public Docket api() {
+    public Docket v1Api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
-                .apis(RequestHandlerSelectors.any())
-                .paths(Predicates.not(PathSelectors.ant("/error*")))
+                .apis(RequestHandlerSelectors.basePackage("ua.com.foxminded.lerkasan.quickpoll.v1.controller"))
+                .paths(PathSelectors.regex("(?!/error).+"))
+                .paths(PathSelectors.regex("(/api/v1/).+"))
                 .build()
-                .apiInfo(apiInfo())
+                .apiInfo(apiInfo()).groupName("v1")
+                .useDefaultResponseMessages(false);
+    }
+
+    @Bean
+    public Docket v2Api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("ua.com.foxminded.lerkasan.quickpoll.v2.controller"))
+                .paths(PathSelectors.regex("(?!/error).+"))
+                .paths(PathSelectors.regex("(/api/v2/).+"))
+                .build()
+                .apiInfo(apiInfo()).groupName("v2")
                 .useDefaultResponseMessages(false);
     }
 

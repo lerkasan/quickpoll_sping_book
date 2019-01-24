@@ -1,9 +1,11 @@
-package ua.com.foxminded.lerkasan.quickpoll.controller;
+package ua.com.foxminded.lerkasan.quickpoll.v2.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +22,8 @@ import java.net.URI;
 
 import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
-@RestController
-@RequestMapping(path = "/api/polls")
+@RestController("pollControllerV2") // to avoid exception rg.springframework.context.annotation.ConflictingBeanDefinitionException: Annotation-specified bean name 'pollController' for bean class [ua.com.foxminded.lerkasan.quickpoll.v2.controller.PollController] conflicts with existing, non-compatible bean definition of same name and class [ua.com.foxminded.lerkasan.quickpoll.v1.controller.PollController]
+@RequestMapping(path = "/api/v2/polls")
 public class PollController {
 
     @Autowired
@@ -33,8 +35,8 @@ public class PollController {
     @GetMapping
     @ApiOperation(value = "List all polls", response = Poll.class, responseContainer = "List")
     @ApiResponse(code = 200, message = "Polls were listed gracefully", response = Poll.class, responseContainer = "List")
-    public ResponseEntity<Iterable<Poll>> getAllPolls() {
-        Iterable<Poll> allPolls = pollRepository.findAll();
+    public ResponseEntity<Page<Poll>> getAllPolls(Pageable pageable) {
+        Page<Poll> allPolls = pollRepository.findAll(pageable);
         return new ResponseEntity<>(allPolls, HttpStatus.OK);
     }
 

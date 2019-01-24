@@ -1,12 +1,12 @@
 package ua.com.foxminded.lerkasan.quickpoll.repository;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import ua.com.foxminded.lerkasan.quickpoll.domain.Poll;
 import ua.com.foxminded.lerkasan.quickpoll.exception.ResourceNotFoundException;
 
 @Repository
-public interface PollRepository extends CrudRepository<Poll, Long> {
+public interface PollRepository extends PagingAndSortingRepository<Poll, Long> {
 
     default Poll getPollById(Long pollId) {
         return findById(pollId)
