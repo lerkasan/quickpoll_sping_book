@@ -1,4 +1,4 @@
-package ua.com.foxminded.lerkasan.quickpoll.v2.controller;
+package ua.com.foxminded.lerkasan.quickpoll.v3.controller;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -22,8 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@RestController("computeResultControllerV2")
-@RequestMapping("/api/v2/computeresult")
+@RestController("computeResultControllerV3")
+@RequestMapping(path = {"/api/v3/computeresult", "/api/v3/oauth2/computeresult"})
 public class ComputeResultController {
 
     @Autowired

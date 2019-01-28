@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController("computeResultControllerV1")
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/computeresult")
 public class ComputeResultController {
 
     @Autowired
@@ -32,7 +32,7 @@ public class ComputeResultController {
     @Autowired
     private PollRepository pollRepository;
 
-    @GetMapping("/computeresult")
+    @GetMapping
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Poll results are shown gracefully", response = VoteResult.class),
             @ApiResponse(code = 404, message = "Not found", response = ErrorDetails.class)

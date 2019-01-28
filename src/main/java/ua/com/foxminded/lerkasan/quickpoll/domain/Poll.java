@@ -17,6 +17,7 @@ public class Poll {
     private Long id;
 
     @NotEmpty
+    @Column(nullable = false)
     @ApiModelProperty(required = true)
     private String question;
 
