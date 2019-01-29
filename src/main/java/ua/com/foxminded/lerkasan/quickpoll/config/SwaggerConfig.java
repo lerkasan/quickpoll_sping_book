@@ -40,6 +40,18 @@ public class SwaggerConfig {
                 .useDefaultResponseMessages(false);
     }
 
+    @Bean
+    public Docket v3Api() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("ua.com.foxminded.lerkasan.quickpoll.v3.controller"))
+                .paths(PathSelectors.regex("(?!/error).+"))
+                .paths(PathSelectors.regex("(/api/v3/).+"))
+                .build()
+                .apiInfo(apiInfo()).groupName("v3")
+                .useDefaultResponseMessages(false);
+    }
+
     private ApiInfo apiInfo() {
         return new ApiInfo(
                 "Quickpoll RESTful API",
